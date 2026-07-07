@@ -1,0 +1,5 @@
+# Copy this file to db.properties (project root or src/main/resources)
+# Defaults match the local Docker setup in README. db.properties is git-ignored.
+db.url=jdbc:oracle:thin:@//localhost:1521/XEPDB1
+db.user=library_app
+db.password=library_app_dev
