@@ -1,0 +1,20 @@
+# Build output
+target/
+*.class
+*.jar
+
+# Credentials - never commit these
+db.properties
+src/main/resources/db.properties
+
+# IDE
+.idea/
+*.iml
+.vscode/
+.settings/
+.classpath
+.project
+
+# OS
+.DS_Store
+Thumbs.db
