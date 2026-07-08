@@ -13,7 +13,7 @@ A console application for managing a library's books, members, and loans - built
 
 ## Why the logic is in PL/SQL
 
-Borrowing a book is not one statement - it's *check member, check limit, lock the book row, decrement copies, insert loan* as one atomic unit. Doing this in Java would mean multiple round trips and race conditions between check and update. `LIBRARY_PKG.BORROW_BOOK` does it in a single database call with `SELECT ... FOR UPDATE` row locking, so two clients can never borrow the last copy simultaneously. The Java layer maps the package's `RAISE_APPLICATION_ERROR` codes (ORA-20001…20005) into clean user-facing messages.
+Borrowing a book is not one statement - it's *lock the member, check the loan limit, lock the book row, decrement copies, insert loan* as one atomic unit. Doing this in Java would mean multiple round trips and race conditions between check and update. `LIBRARY_PKG.BORROW_BOOK` does it in a single database call with `SELECT ... FOR UPDATE` row locking, so two clients can never borrow the last copy or push one member past the active-loan limit simultaneously. The Java layer maps the package's `RAISE_APPLICATION_ERROR` codes (ORA-20001…20005) into clean user-facing messages.
 
 ## Features
 
@@ -115,7 +115,7 @@ src/main/java/com/regan/library/
 
 ## What was hard
 
-- **Getting the transaction boundary right.** My first version decremented `available_copies` from Java in a separate statement from the loan insert - under concurrency that oversells copies. Moving the whole operation into one PL/SQL procedure with `FOR UPDATE` locking fixed it and taught me why check-then-act logic belongs next to the data.
+- **Getting the transaction boundary right.** My first version decremented `available_copies` from Java in a separate statement from the loan insert - under concurrency that oversells copies. Moving the whole operation into one PL/SQL procedure with `FOR UPDATE` locking on both the member and book rows fixed it and taught me why check-then-act logic belongs next to the data.
 - **Translating Oracle errors into UX.** `RAISE_APPLICATION_ERROR` messages arrive prefixed with `ORA-20004:` and stack noise; the DAO layer strips and maps them by error code so the console shows *"Member 2 already has 3 active loans."* instead of a stack trace.
 
 ## Roadmap

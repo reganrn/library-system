@@ -56,11 +56,13 @@ CREATE OR REPLACE PACKAGE BODY library_pkg AS
     v_available books.available_copies%TYPE;
     v_active    members.active%TYPE;
   BEGIN
-    -- Validate member
+    -- Lock the member row first so concurrent borrows for the same member
+    -- cannot both pass the active-loan limit check.
     BEGIN
       SELECT active INTO v_active
       FROM   members
-      WHERE  member_id = p_member_id;
+      WHERE  member_id = p_member_id
+      FOR UPDATE;
     EXCEPTION
       WHEN NO_DATA_FOUND THEN
         RAISE_APPLICATION_ERROR(-20003, 'Member ' || p_member_id || ' not found.');
