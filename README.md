@@ -1,5 +1,7 @@
 # Library Management System
 
+[![CI](https://github.com/reganrn/library-system/actions/workflows/ci.yml/badge.svg)](https://github.com/reganrn/library-system/actions/workflows/ci.yml)
+
 A console application for managing a library's books, members, and loans - built on **Java (JDBC)** with **Oracle Database**, where all transactional business logic lives in a **PL/SQL package** rather than application code.
 
 ```
@@ -76,11 +78,12 @@ cp src/main/resources/db.properties.example db.properties
 ### 4. Run
 
 ```bash
-mvn package
+./mvnw package
 java -jar target/library-system-1.0.0.jar
 ```
 
-or during development: `mvn compile exec:java`
+On Windows, use `mvnw.cmd package`. During development, run `./mvnw compile exec:java`
+or `mvnw.cmd compile exec:java` on Windows.
 
 ## Example session
 
